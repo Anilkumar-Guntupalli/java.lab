@@ -1,38 +1,32 @@
-package exp9;
 import java.io.*;
 import java.util.*;
 
 public class EXP9 {
-
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         int choice;
 
         do {
-            System.out.println("\n----- FILE HANDLING MENU -----");
+            System.out.println("\n----- File Handling Menu -----");
             System.out.println("1. Create a new file");
             System.out.println("2. Rename a file");
             System.out.println("3. Delete a file");
             System.out.println("4. Create a directory");
             System.out.println("5. Find absolute path of a file");
             System.out.println("6. Display all files in a directory");
-            System.out.println("7. Low Stock Report (Inventory Analysis)");
+            System.out.println("7. Low Stock Alert Report");
             System.out.println("8. Exit");
             System.out.print("Enter your choice: ");
             choice = sc.nextInt();
             sc.nextLine();
 
             switch (choice) {
-
-                // 1. Create new file
                 case 1:
                     System.out.print("Enter directory name: ");
                     String dirName = sc.nextLine();
                     File directory = new File(dirName);
-                    if (!directory.exists()) {
-                        directory.mkdir();
-                        System.out.println("Directory created: " + dirName);
-                    }
+                    if (!directory.exists()) directory.mkdir();
+
                     System.out.print("Enter file name to create inside that directory: ");
                     String fileName = sc.nextLine();
                     File newFile = new File(directory, fileName);
@@ -40,13 +34,12 @@ public class EXP9 {
                         if (newFile.createNewFile())
                             System.out.println("File created successfully inside " + dirName);
                         else
-                            System.out.println("File already exists in that directory.");
+                            System.out.println("File already exists.");
                     } catch (IOException e) {
                         System.out.println("Error creating file.");
                     }
                     break;
 
-                // 2. Rename file
                 case 2:
                     System.out.print("Enter current file name: ");
                     String oldName = sc.nextLine();
@@ -60,7 +53,6 @@ public class EXP9 {
                         System.out.println("Error renaming file.");
                     break;
 
-                // 3. Delete file
                 case 3:
                     System.out.print("Enter file name to delete: ");
                     String delName = sc.nextLine();
@@ -71,7 +63,6 @@ public class EXP9 {
                         System.out.println("Error deleting file.");
                     break;
 
-                // 4. Create directory
                 case 4:
                     System.out.print("Enter new directory name: ");
                     String newDir = sc.nextLine();
@@ -82,7 +73,6 @@ public class EXP9 {
                         System.out.println("Directory already exists or cannot be created.");
                     break;
 
-                // 5. Absolute path
                 case 5:
                     System.out.print("Enter file name: ");
                     String absFile = sc.nextLine();
@@ -90,7 +80,6 @@ public class EXP9 {
                     System.out.println("Absolute Path: " + abs.getAbsolutePath());
                     break;
 
-                // 6. Display all files in a directory
                 case 6:
                     System.out.print("Enter directory name: ");
                     String dirname = sc.nextLine();
@@ -105,52 +94,38 @@ public class EXP9 {
                     }
                     break;
 
-                // 7. Inventory Analysis (Low Stock Report)
                 case 7:
                     try {
                         File file = new File("inventory.txt");
-                        if (!file.exists()) {
-                            System.out.println("inventory.txt not found! Please create it first.");
-                            break;
-                        }
+                        Scanner fileReader = new Scanner(file);
+                        FileWriter fw = new FileWriter("low_stock_alert.txt");
+                        fw.write("----- LOW STOCK ALERT REPORT -----\n\n");
+                        fw.write(String.format("%-15s %-10s %-10s\n", "Product", "Stock", "Price"));
+                        fw.write("------------------------------------\n");
 
-                        BufferedReader br = new BufferedReader(new FileReader(file));
-                        BufferedWriter bw = new BufferedWriter(new FileWriter("low_stock_alert.txt"));
-                        String line;
                         boolean found = false;
-
-                        bw.write("******* LOW STOCK ALERT REPORT *******\n");
-                        bw.write(String.format("%-20s %-10s %-10s\n", "Product Name", "Stock", "Price"));
-                        bw.write("---------------------------------------------\n");
-
-                        while ((line = br.readLine()) != null) {
+                        while (fileReader.hasNextLine()) {
+                            String line = fileReader.nextLine();
                             String[] parts = line.split(",");
-                            if (parts.length == 3) {
-                                String product = parts[0].trim();
-                                int stock = Integer.parseInt(parts[1].trim());
-                                double price = Double.parseDouble(parts[2].trim());
-
-                                if (stock < 5) {
-                                    found = true;
-                                    bw.write(String.format("%-20s %-10d %-10.2f\n", product, stock, price));
-                                }
+                            String name = parts[0].trim();
+                            int stock = Integer.parseInt(parts[1].trim());
+                            int price = Integer.parseInt(parts[2].trim());
+                            if (stock < 5) {
+                                fw.write(String.format("%-15s %-10d %-10d\n", name, stock, price));
+                                found = true;
                             }
                         }
+                        if (!found)
+                            fw.write("No low stock products found.\n");
 
-                        if (!found) {
-                            bw.write("All products have sufficient stock.\n");
-                        }
-
-                        br.close();
-                        bw.close();
+                        fileReader.close();
+                        fw.close();
                         System.out.println("Low stock report written to low_stock_alert.txt");
-
                     } catch (Exception e) {
-                        System.out.println("Error processing inventory file: " + e.getMessage());
+                        System.out.println("Error processing inventory file.");
                     }
                     break;
 
-                // 8. Exit
                 case 8:
                     System.out.println("Exiting... Thank you!");
                     break;
@@ -160,7 +135,6 @@ public class EXP9 {
             }
 
         } while (choice != 8);
-
         sc.close();
     }
 }
