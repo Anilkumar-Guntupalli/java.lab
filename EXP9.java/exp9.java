@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class EXP9 {
+public class exp9 {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         int choice;
@@ -138,3 +138,4 @@ public class EXP9 {
         sc.close();
     }
 }
+
